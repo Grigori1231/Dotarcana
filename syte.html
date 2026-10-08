@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dotarcana</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            background-color: #333;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        header h1 {
+            font-size: 3rem;
+            opacity: 0;
+            animation: fadeIn 2s forwards;
+        }
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+        nav {
+            background-color: #444;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav .nav-links {
+            display: flex;
+        }
+        nav .nav-links a {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        nav .nav-links a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+        nav .auth-button {
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        nav .auth-button:hover {
+            background-color: #ddd;
+            color: black;
+        }
+        .container {
+            padding: 2rem;
+            flex: 1;
+        }
+        .product {
+            border: 1px solid #ddd;
+            padding: 1rem;
+            margin: 1rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .product img {
+            max-width: 100px;
+            margin-right: 1rem;
+        }
+        .product-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .button-container {
+            display: flex;
+            align-items: center;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: auto;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .modal-content form {
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-content form label {
+            margin-top: 10px;
+        }
+        .modal-content form input {
+            margin-top: 5px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        .modal-content form button {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .modal-content form button:hover {
+            background-color: #555;
+        }
+        .confirm-modal {
+            display: flex;
+            align-items: center;
+        }
+        .confirm-modal img {
+            max-width: 100px;
+            margin-right: 1rem;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+        .user-info span {
+            color: white;
+            padding: 14px 20px;
+        }
+        /* Стили для учета полосы прокрутки */
+        body::-webkit-scrollbar {
+            width: 12px;
+        }
+        body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        body::-webkit-scrollbar-thumb {
+            background: #888;
+        }
+        body::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .cart-icon {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 50px; /* Уменьшаем размер значка */
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        .cart-icon:hover {
+            transform: scale(1.1);
+        }
+        * {
+            font-family: 'Roboto', sans-serif;
+        }
+        .container {
+            padding: 2rem;
+            flex: 1;
+        }
+        .button-style {
+            outline: none;
+            height: 40px; /* Уменьшаем высоту кнопки */
+            text-align: center;
+            width: 120px; /* Уменьшаем ширину кнопки */
+            border-radius: 20px; /* Уменьшаем радиус скругления */
+            background: #fff;
+            border: 2px solid green;
+            color: green;
+            letter-spacing: 1px;
+            text-shadow: 0;
+            font-size: 12px; /* Уменьшаем размер шрифта */
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .button-style:hover {
+            color: white;
+            background: green;
+            transform: scale(1.1);
+        }
+        .button-style:active {
+            letter-spacing: 2px;
+            transform: scale(0.95);
+        }
+        .onclic {
+            width: 40px;
+            border-color: gray;
+            border-width: 3px;
+            font-size: 0;
+            border-left-color: green;
+            animation: rotating 2s 0.25s linear infinite;
+        }
+        .onclic:after {
+            content: "";
+        }
+        .onclic:hover {
+            color: green;
+            background: white;
+        }
+        .validate {
+            font-size: 13px;
+            color: white;
+            background: green;
+        }
+        .validate:after {
+            font-family: 'FontAwesome';
+            content: "\f00c";
+        }
+        @keyframes rotating {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Dotarcana</h1>
+        <img src="https://cdn-icons-png.flaticon.com/512/263/263142.png" alt="Корзина" class="cart-icon" onclick="window.location.href='korzina.html'">
+    </header>
+    <nav>
+        <div class="nav-links">
+            <a href="syte.html">Главная</a>
+            <a href="Onas.html">О нас</a>
+            <a href="kontakts.html">Контакты</a>
+        </div>
+        <div class="auth-button" id="authButton">Войти/Регистрация</div>
+        <div class="user-info" id="userInfo" style="display: none;">
+            <span id="userLogin"></span>
+            <div class="auth-button" id="logoutButton">Выйти</div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="product">
+            <div class="product-info">
+                <img src="https://photobooth.cdn.sports.ru/preset/post/5/0b/5f155a6374ba69ed74bce2c8945f9.jpeg">
+                <div>
+                    <h2>Fiery Soul of the Slayer</h2>
+                    <p>Аркана на Lina</p>
+                    <p>Цена: 3700 руб.</p>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="button-style" onclick="addToCart('Fiery Soul of the Slayer', 'Аркана на Lina', 3700, 'https://photobooth.cdn.sports.ru/preset/post/5/0b/5f155a6374ba69ed74bce2c8945f9.jpeg')">Добавить в корзину</button>
+            </div>
+        </div>
+        <div class="product">
+            <div class="product-info">
+                <img src="https://photobooth.cdn.sports.ru/preset/post/5/22/8e671b5984fce8855412c0efa1212.jpeg">
+                <div>
+                    <h2>Blades of Voth Domosh</h2>
+                    <p>Аркана на Legion Commander</p>
+                    <p>Цена: 3700 руб.</p>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="button-style" onclick="addToCart('Blades of Voth Domosh', 'Аркана на Legion Commander', 3700, 'https://photobooth.cdn.sports.ru/preset/post/5/22/8e671b5984fce8855412c0efa1212.jpeg')">Добавить в корзину</button>
+            </div>
+        </div>
+        <div class="product">
+            <div class="product-info">
+                <img src="https://photobooth.cdn.sports.ru/preset/post/8/f7/cdd82ab9a47ea8e089be3a041b404.jpeg">
+                <div>
+                    <h2>Fractal Horns of Inner Abysm</h2>
+                    <p>Аркана на Terrorblade</p>
+                    <p>Цена: 3700 руб.</p>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="button-style" onclick="addToCart('Fractal Horns of Inner Abysm', 'Аркана на Terrorblade', 3700, 'https://photobooth.cdn.sports.ru/preset/post/8/f7/cdd82ab9a47ea8e089be3a041b404.jpeg')">Добавить в корзину</button>
+            </div>
+        </div>
+        <div class="product">
+            <div class="product-info">
+                <img src="https://photobooth.cdn.sports.ru/preset/post/7/aa/97c1f694e4f31bf7cad8d1647f97f.jpeg">
+                <div>
+                    <h2>Swine of the Sunken Galley</h2>
+                    <p>Аркана на Techies</p>
+                    <p>Цена: 3700 руб.</p>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="button-style" onclick="addToCart('Swine of the Sunken Galley', 'Аркана на Techies', 3700, 'https://photobooth.cdn.sports.ru/preset/post/7/aa/97c1f694e4f31bf7cad8d1647f97f.jpeg')">Добавить в корзину</button>
+            </div>
+        </div>
+        <div class="product">
+            <div class="product-info">
+                <img src="https://photobooth.cdn.sports.ru/preset/post/8/40/fe75cc2c540d08ecc01296780d4de.jpeg">
+                <div>
+                    <h2>Demon Eater</h2>
+                    <p>Аркана на Shadow Fiend</p>
+                    <p>Цена: 3700 руб.</p>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="button-style" onclick="addToCart('Demon Eater', 'Аркана на Shadow Fiend', 3700, 'https://photobooth.cdn.sports.ru/preset/post/8/40/fe75cc2c540d08ecc01296780d4de.jpeg')">Добавить в корзину</button>
+            </div>
+        </div>
+        <div class="product">
+            <div class="product-info">
+                <img src="https://photobooth.cdn.sports.ru/preset/post/5/41/9bd587ad94cba92e61fd28fc097c4.jpeg">
+                <div>
+                    <h2>Manifold Paradox</h2>
+                    <p>Аркана на Phantom Assassin</p>
+                    <p>Цена: 3700 руб.</p>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="button-style" onclick="addToCart('Manifold Paradox', 'Аркана на Phantom Assassin', 3700, 'https://photobooth.cdn.sports.ru/preset/post/5/41/9bd587ad94cba92e61fd28fc097c4.jpeg')">Добавить в корзину</button>
+            </div>
+        </div>
+        <div class="product">
+            <div class="product-info">
+                <img src="https://photobooth.cdn.sports.ru/preset/post/a/f0/4525b1757416790ee6c38172cf7bc.jpeg">
+                <div>
+                    <h2>Frost Avalanche</h2>
+                    <p>Аркана на Crystal Maiden</p>
+                    <p>Цена: 3700 руб.</p>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="button-style" onclick="addToCart('Frost Avalanche', 'Аркана на Crystal Maiden', 3700, 'https://photobooth.cdn.sports.ru/preset/post/a/f0/4525b1757416790ee6c38172cf7bc.jpeg')">Добавить в корзину</button>
+            </div>
+        </div>
+        <div class="product">
+            <div class="product-info">
+                <img src="https://photobooth.cdn.sports.ru/preset/post/e/85/555505cb141f59189a3bee32e391b.jpeg">
+                <div>
+                    <h2>Tempest Helm of the Thundergod</h2>
+                    <p>Аркана на Zeus</p>
+                    <p>Цена: 3700 руб.</p>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="button-style" onclick="addToCart('Tempest Helm of the Thundergod', 'Аркана на Zeus', 3700, 'https://photobooth.cdn.sports.ru/preset/post/e/85/555505cb141f59189a3bee32e391b.jpeg')">Добавить в корзину</button>
+            </div>
+        </div>
+        <div class="product">
+            <div class="product-info">
+                <img src="https://photobooth.cdn.sports.ru/preset/post/e/36/876880e3f4db1af33090f1a77b51e.jpeg">
+                <div>
+                    <h2>Great Sages Reckoning</h2>
+                    <p>Аркана на Monkey King</p>
+                    <p>Цена: 3700 руб.</p>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="button-style" onclick="addToCart('Great Sages Reckoning', 'Аркана на Monkey King', 3700, 'https://photobooth.cdn.sports.ru/preset/post/e/36/876880e3f4db1af33090f1a77b51e.jpeg')">Добавить в корзину</button>
+            </div>
+        </div>
+        <div class="product">
+            <div class="product-info">
+                <img src="https://photobooth.cdn.sports.ru/preset/post/a/fd/c90a68f55449191b1834f28a18758.jpeg">
+                <div>
+                    <h2>Bladeform Legacy</h2>
+                    <p>Аркана на Juggernaut</p>
+                    <p>Цена: 3700 руб.</p>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="button-style" onclick="addToCart('Bladeform Legacy', 'Аркана на Juggernaut', 3700, 'https://photobooth.cdn.sports.ru/preset/post/a/fd/c90a68f55449191b1834f28a18758.jpeg')">Добавить в корзину</button>
+            </div>
+        </div>
+        <div class="product">
+            <div class="product-info">
+                <img src="https://photobooth.cdn.sports.ru/preset/post/f/1b/bb91db93d40d1b6816bd0311fc968.jpeg">
+                <div>
+                    <h2>Feast of Abscession</h2>
+                    <p>Аркана на Pudge</p>
+                    <p>Цена: 3700 руб.</p>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="button-style" onclick="addToCart('Feast of Abscession', 'Аркана на Pudge', 3700, 'https://photobooth.cdn.sports.ru/preset/post/f/1b/bb91db93d40d1b6816bd0311fc968.jpeg')">Добавить в корзину</button>
+            </div>
+        </div>
+        <div class="product">
+            <div class="product-info">
+                <img src="https://photobooth.cdn.sports.ru/preset/post/0/d8/d5927dfa04383a96626628916bf6a.jpeg">
+                <div>
+                    <h2>The Magus Cypher</h2>
+                    <p>Аркана на Rubick</p>
+                    <p>Цена: 3700 руб.</p>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="button-style" onclick="addToCart('The Magus Cypher', 'Аркана на Rubick', 3700, 'https://photobooth.cdn.sports.ru/preset/post/0/d8/d5927dfa04383a96626628916bf6a.jpeg')">Добавить в корзину</button>
+            </div>
+        </div>
+        <div class="product">
+            <div class="product-info">
+                <img src="https://photobooth.cdn.sports.ru/preset/post/5/95/224bac7ba4d98ace4747bad9d640c.jpeg">
+                <div>
+                    <h2>Flockhearts Gamble</h2>
+                    <p>Аркана на Ogre Magi</p>
+                    <p>Цена: 3700 руб.</p>
+                </div>
+            </div>
+            <div class="button-container">
+                <button class="button-style" onclick="addToCart('Flockhearts Gamble', 'Аркана на Ogre Magi', 3700, 'https://photobooth.cdn.sports.ru/preset/post/5/95/224bac7ba4d98ace4747bad9d640c.jpeg')">Добавить в корзину</button>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2025 TastyDrop. Все права защищены.</p>
+    </footer>
+
+    <!-- Модальное окно для входа -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeLoginModal">&times;</span>
+            <h2>Вход</h2>
+            <form id="loginForm">
+                <label for="loginLogin">Логин:</label>
+                <input type="text" id="loginLogin" name="loginLogin" required>
+                <label for="loginEmail">Email:</label>
+                <input type="email" id="loginEmail" name="loginEmail" required>
+                <label for="loginPassword">Пароль:</label>
+                <input type="password" id="loginPassword" name="loginPassword" required>
+                <button type="submit">Войти</button>
+            </form>
+            <p>Нет аккаунта? <a href="#" id="showRegisterModal">Зарегистрируйтесь</a></p>
+        </div>
+    </div>
+
+    <!-- Модальное окно для регистрации -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeRegisterModal">&times;</span>
+            <h2>Регистрация</h2>
+            <form id="registerForm">
+                <label for="registerLogin">Логин:</label>
+                <input type="text" id="registerLogin" name="registerLogin" required>
+                <label for="registerEmail">Email:</label>
+                <input type="email" id="registerEmail" name="registerEmail" required>
+                <label for="registerPassword">Пароль:</label>
+                <input type="password" id="registerPassword" name="registerPassword" required>
+                <button type="submit">Зарегистрироваться</button>
+            </form>
+            <p>Уже есть аккаунт? <a href="#" id="showLoginModal">Войти</a></p>
+        </div>
+    </div>
+
+    <!-- Модальное окно для подтверждения выхода -->
+    <div id="logoutConfirmModal" class="modal">
+        <div class="modal-content confirm-modal">
+            <img src="https://sun9-16.userapi.com/impg/3guTmRKGaVgT1vzH9nUHcrnKDfQQ4_w4rH2N9Q/ZJ08_8JXRgE.jpg?size=597x680&quality=96&sign=31f055a29460661769b2d6c5bd6f8eb6&c_uniq_tag=BvkKac1H_4eUMT6YoRkJ1cbvTIZwlC3fNOL7XM2RYaQ&type=album" alt="Подтверждение выхода">
+            <div>
+                <h2>Подтверждение выхода</h2>
+                <p>Вы уверены, что хотите выйти из аккаунта?</p>
+                <button id="confirmLogout">Да</button>
+                <button id="cancelLogout">Нет</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Получаем элементы
+        var authButton = document.getElementById("authButton");
+        var loginModal = document.getElementById("loginModal");
+        var closeLoginModal = document.getElementById("closeLoginModal");
+        var loginForm = document.getElementById("loginForm");
+        var showRegisterModal = document.getElementById("showRegisterModal");
+        var registerModal = document.getElementById("registerModal");
+        var closeRegisterModal = document.getElementById("closeRegisterModal");
+        var registerForm = document.getElementById("registerForm");
+        var showLoginModal = document.getElementById("showLoginModal");
+        var userLogin = document.getElementById("userLogin");
+        var userInfo = document.getElementById("userInfo");
+        var logoutButton = document.getElementById("logoutButton");
+        var logoutConfirmModal = document.getElementById("logoutConfirmModal");
+        var confirmLogout = document.getElementById("confirmLogout");
+        var cancelLogout = document.getElementById("cancelLogout");
+
+        // Открываем модальное окно для входа
+        authButton.onclick = function() {
+            clearForm(loginForm);
+            loginModal.style.display = "block";
+        }
+
+        // Закрываем модальное окно для входа
+        closeLoginModal.onclick = function() {
+            loginModal.style.display = "none";
+        }
+
+        // Закрываем модальное окно для входа при клике вне его
+        window.onclick = function(event) {
+            if (event.target == loginModal) {
+                loginModal.style.display = "none";
+            }
+            if (event.target == registerModal) {
+                registerModal.style.display = "none";
+            }
+            if (event.target == logoutConfirmModal) {
+                logoutConfirmModal.style.display = "none";
+            }
+        }
+
+        // Обработка отправки формы для входа
+        loginForm.onsubmit = function(event) {
+            event.preventDefault();
+            var loginLogin = document.getElementById("loginLogin").value;
+            var loginEmail = document.getElementById("loginEmail").value;
+            var loginPassword = document.getElementById("loginPassword").value;
+
+            // Проверяем, существует ли аккаунт
+            var users = JSON.parse(localStorage.getItem("users")) || [];
+            var user = users.find(u => u.login === loginLogin && u.email === loginEmail && u.password === loginPassword);
+
+            if (user) {
+                // Сохраняем активного пользователя в localStorage
+                localStorage.setItem("activeUser", user.login);
+
+                // Отображаем логин пользователя
+                userLogin.textContent = user.login;
+                userInfo.style.display = "flex";
+                authButton.style.display = "none";
+
+                // Закрываем модальное окно
+                loginModal.style.display = "none";
+            } else {
+                alert("Неверный логин, email или пароль.");
+            }
+        }
+
+        // Обработка клика по ссылке регистрации
+        showRegisterModal.onclick = function() {
+            clearForm(registerForm);
+            loginModal.style.display = "none";
+            registerModal.style.display = "block";
+        }
+
+        // Закрываем модальное окно для регистрации
+        closeRegisterModal.onclick = function() {
+            registerModal.style.display = "none";
+        }
+
+        // Обработка отправки формы для регистрации
+        registerForm.onsubmit = function(event) {
+            event.preventDefault();
+            var registerLogin = document.getElementById("registerLogin").value;
+            var registerEmail = document.getElementById("registerEmail").value;
+            var registerPassword = document.getElementById("registerPassword").value;
+
+            // Проверяем, существует ли уже аккаунт с таким логином
+            var users = JSON.parse(localStorage.getItem("users")) || [];
+            if (users.some(u => u.login === registerLogin)) {
+                alert("Аккаунт с таким логином уже существует.");
+                return;
+            }
+
+            // Сохраняем данные пользователя в localStorage
+            users.push({ login: registerLogin, email: registerEmail, password: registerPassword });
+            localStorage.setItem("users", JSON.stringify(users));
+
+            // Сохраняем активного пользователя в localStorage
+            localStorage.setItem("activeUser", registerLogin);
+
+            // Отображаем логин пользователя
+            userLogin.textContent = registerLogin;
+            userInfo.style.display = "flex";
+            authButton.style.display = "none";
+
+            // Закрываем модальное окно
+            registerModal.style.display = "none";
+        }
+
+        // Обработка клика по ссылке входа
+        showLoginModal.onclick = function() {
+            clearForm(loginForm);
+            registerModal.style.display = "none";
+            loginModal.style.display = "block";
+        }
+
+        // Проверяем, есть ли активный пользователь
+        var activeUser = localStorage.getItem("activeUser");
+        if (activeUser) {
+            userLogin.textContent = activeUser;
+            userInfo.style.display = "flex";
+            authButton.style.display = "none";
+        }
+
+        // Обработка клика по кнопке выхода
+        logoutButton.onclick = function() {
+            logoutConfirmModal.style.display = "block";
+        }
+
+        // Обработка подтверждения выхода
+        confirmLogout.onclick = function() {
+            // Скрываем логин пользователя и кнопку выхода
+            userInfo.style.display = "none";
+            authButton.style.display = "block";
+            logoutConfirmModal.style.display = "none";
+            localStorage.removeItem("activeUser");
+        }
+
+        // Обработка отмены выхода
+        cancelLogout.onclick = function() {
+            logoutConfirmModal.style.display = "none";
+        }
+
+        // Функция для очистки формы
+        function clearForm(form) {
+            form.reset();
+        }
+
+        // Функция для добавления товара в корзину
+        function addToCart(name, description, price, image) {
+            var cart = JSON.parse(localStorage.getItem("cart")) || [];
+            cart.push({ name, description, price, image });
+            localStorage.setItem("cart", JSON.stringify(cart));
+            alert("Товар добавлен в корзину!");
+        }
+    </script>
+</body>
+</html>
